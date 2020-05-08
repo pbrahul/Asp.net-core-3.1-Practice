@@ -10,6 +10,7 @@ using DLL.Model;
 using DLL.Repository;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,6 +24,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SimpleAPI.Middleware;
+using SimpleAPI.Policy;
+using Utility;
 //using DLL.Model;
 
 
@@ -112,12 +115,20 @@ namespace SimpleAPI
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
         };
     });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AtToken", Policy => Policy.Requirements.Add(new TokenPolicy()));
+            });
+
+
         }
 
         private void GetAllDepensency(IServiceCollection services)
         {
+            services.AddSingleton<IAuthorizationHandler, TokenPolicyHandler>();
             DLLDipendency.Alldependency(services);
             BLLDependency.AllDependency(services);
+            UtilityDependency.AllDependency(services);
 
         }
 

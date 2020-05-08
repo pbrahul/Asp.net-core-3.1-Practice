@@ -10,6 +10,7 @@ namespace BLL.Services
     public interface ITestService
     {
         Task SaveAllData();
+        Task UpdateBalance();
     }
 
     public class TestService : ITestService
@@ -51,5 +52,25 @@ namespace BLL.Services
 
         }
 
+        public async Task UpdateBalance()
+        {
+            Random random = new Random();
+            int myNumber= random.Next(1, 100);
+
+            Order myOrder = new Order
+            {
+                Amount = myNumber
+            };
+
+            await _unitOfWork.orderRepository.CreateAsync(myOrder);
+
+            if(await _unitOfWork.ApplicationSaveChangesAsync())
+            {
+                await _unitOfWork.customerBalanceRepository.UpdateCustomerBalanceAsync(myNumber);
+            }
+
+           
         }
     }
+
+}

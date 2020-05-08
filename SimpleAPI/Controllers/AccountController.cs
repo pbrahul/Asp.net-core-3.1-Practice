@@ -39,17 +39,17 @@ namespace SimpleAPI.Controllers
 
 
         [HttpGet("test2")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Test2()
+        [Authorize(Policy = "AtToken")]
+        public ActionResult Test2()
         {
-            var tt = User;
+            //var tt = User;
 
-            await _accountService.UserLoginInfo(tt);
+            //await _accountService.UserLoginInfo(tt);
             return Ok("enter test 2");
         }
 
         [HttpGet("test3")]
-        [Authorize(Roles = "Teacher, Staff")]
+        [Authorize(Roles = "Admin,Staff", Policy = "AtToken")]
         public ActionResult Test3()
         {
             var tt = User;
@@ -58,7 +58,22 @@ namespace SimpleAPI.Controllers
             return Ok("enter test 3");
         }
 
+        [HttpPost("logout")]
+        [Authorize(Roles = "Admin,Staff", Policy = "AtToken")]
+        public async Task<ActionResult> Logout()
+        {
+            var tt = User;
 
+
+            return Ok(await _accountService.Logout(tt));
+        }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult> RefreshToken(RefeshTokenRequest request)
+        {
+
+            return Ok(await _accountService.RefreshToken(request.Token));
+        }
 
 
     }

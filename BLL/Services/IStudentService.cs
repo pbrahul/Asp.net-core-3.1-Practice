@@ -2,6 +2,7 @@
 using DLL.Model;
 using DLL.Repository;
 using DLL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 //using Utility.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace BLL.Services
        public Task<Student> FindAStudentAsync(string code);
        public Task<List<Student>> GetAllStudentAsync();
 
+       Task<List<StudentReport>> GetAllStudentDepartmentReportAsync();
 
         Task<Boolean> IsEmailExist(string email);
         Task<Boolean> IsRollNoExist(string rollNo);
@@ -24,6 +26,7 @@ namespace BLL.Services
         Task<Student> DeleteAStudentAsync(string rollNo);
         Task<Student> UpdateStudentAsync(string rollNo, StudentUpdateRequest aStudent);
         Task<Boolean> IsDepartmentExist(int deptId);
+        Task<Boolean> IsStudentExist(int studentId);
     }
     public class StudentService : IStudentService
     {
@@ -158,6 +161,38 @@ namespace BLL.Services
             var department = await _unitOfWork.departmentRepository.GetAAsynce(x => x.DeptId == deptId);
 
             if (department != null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<List<StudentReport>> GetAllStudentDepartmentReportAsync()
+        {
+            var allStudent = await _unitOfWork.studentRepository.QueryAll().Include(x => x.Department).ToListAsync();
+           
+            var result = new List<StudentReport>();
+
+            foreach (var student in allStudent)
+            {
+                result.Add(new StudentReport()
+                {
+                    StudentName = student.Name,
+                    StudentRollNo = student.RollNo,
+                    StudentEmail=student.Email,
+                    DepartmentCode = student.Department.Code,
+                    DepartmentName = student.Department.DeptName
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<bool> IsStudentExist(int studentId)
+        {
+            var student = await _unitOfWork.studentRepository.GetAAsynce(x => x.StudentID == studentId);
+
+            if (student != null)
             {
                 return false;
             }

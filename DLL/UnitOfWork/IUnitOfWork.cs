@@ -13,6 +13,11 @@ namespace DLL.UnitOfWork
 
         IDepartmentRepository departmentRepository { get; }
         IStudentRepository studentRepository { get; }
+        ICustomerBalanceRepository customerBalanceRepository { get; }
+        IOrderRepository orderRepository { get; }
+        ICourseRepository courseRepository { get; }
+        ICourseEnrollRepository courseEnrollRepository { get; }
+
 
         //All repository Ended here
 
@@ -30,8 +35,16 @@ namespace DLL.UnitOfWork
             private IDepartmentRepository _departmentRepository;
 
             private IStudentRepository _studentRepository;
+        
+             private ICustomerBalanceRepository _customerBalanceRepository;
+       
+            private IOrderRepository _orderRepository;
 
-            public UnitOfWork(ApplicationDBContext context)
+            private ICourseRepository _courseRepository;
+
+            private ICourseEnrollRepository _courseEnrollRepository;
+
+        public UnitOfWork(ApplicationDBContext context)
             {
                 _context = context;
             }
@@ -41,6 +54,16 @@ namespace DLL.UnitOfWork
 
             public IStudentRepository studentRepository =>
            _studentRepository ??= new StudentRepository(_context);
+        
+            public ICustomerBalanceRepository customerBalanceRepository =>
+          _customerBalanceRepository ??= new CustomerRepository(_context);
+            public IOrderRepository orderRepository =>
+         _orderRepository ??= new OrderRepository(_context);
+            public ICourseRepository courseRepository =>
+           _courseRepository ??= new CourseRepository(_context);
+        public ICourseEnrollRepository courseEnrollRepository =>
+           _courseEnrollRepository ??= new CourseEnrollRepository(_context);
+
 
         public async Task<bool> ApplicationSaveChangesAsync()
             {

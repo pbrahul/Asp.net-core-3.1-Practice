@@ -61,6 +61,11 @@ namespace SimpleAPI.Middleware
                         error.StatusCode = (int) HttpStatusCode.NotFound;
                         break;
                     }
+                case UnauthorizedAccessException unauthorizedAccessException:
+                    error.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    error.Message = "You are not authorized";
+                    break;
+
                 default:
                     {
                         break;
@@ -71,7 +76,7 @@ namespace SimpleAPI.Middleware
             var result = JsonConvert.SerializeObject(error);
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = error.StatusCode;
-             await context.Response.WriteAsync(result);
+            await context.Response.WriteAsync(result);
         }
     }
 }
