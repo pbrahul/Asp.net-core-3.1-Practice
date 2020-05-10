@@ -3,6 +3,9 @@ using DLL.Model;
 using DLL.Repository;
 using DLL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Pipelines.Sockets.Unofficial.Arenas;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,26 +61,38 @@ namespace BLL.Services
 
         public async Task<List<CourseEnrollmentReport>> GetAllStudentCourseEnrollReportAsync()
         {
-             var allStudent = await _unitOfWork.courseEnrollRepository.QueryAll().Include(x => x.Student).Include(x => x.Course).ToListAsync();
-           
-            var result = new List<CourseEnrollmentReport>();
-
+            var allStudent = await _unitOfWork.studentRepository.QueryAll().Include(x => x.StudentCourses).ThenInclude(x => x.Course).ToListAsync();
             
+   //         var allStudent = await _unitOfWork.courseEnrollRepository.QueryAll().Include(x => x.Student).Include(x => x.Course).GroupBy(p => p.StudentId)
+   //.Select(g => g.OrderBy(p => p.Student.Name)).ToListAsync();
+
+//            GroupBy(x => new { x.Birthdate.Year })
+//.Where(x => x.Count() >= 2)
+//.Select(x => new { x.Key, Count = x.Count() })
+//.ToList();
+            //var studentCourses =
+            //    await _unitOfWork.StudentRepository.QueryAll().Include(x => x.CourseStudents).ThenInclude(x => x.Course)
+            //        .ToListAsync();
+
+            var result = new List<CourseEnrollmentReport>();
+           
             foreach (var studentEnroll in allStudent)
             {
-                
+                //var studentID = studentEnroll.Student.StudentID;
+
                 result.Add(new CourseEnrollmentReport()
                 {
-                    StudentName = studentEnroll.Student.Name,
-                    StudentRollNo = studentEnroll.Student.RollNo,
-                    StudentEmail=studentEnroll.Student.Email,
-                    CourseCode = studentEnroll.Course.Code,
-                    CourseName = studentEnroll.Course.Name
-                });
-            }
+                    StudentName = studentEnroll.Name,
+                    StudentRollNo = studentEnroll.RollNo,
+                    StudentEmail = studentEnroll.Email,
+                    //CourseCode = studentEnroll.Course.Code,
+                    //CourseName=studentEnroll.Course.Name
+                    CourseStusents=studentEnroll.StudentCourses
 
+                });
+                 
+            }
             return result;
         }
- 
-    }
+     }
 }

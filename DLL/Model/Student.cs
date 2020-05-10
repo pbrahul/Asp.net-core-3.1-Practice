@@ -23,5 +23,7 @@ namespace DLL.Model
 
         [ForeignKey("DeptID")]
         public Department Department { get; set; }
+        //public ICollection<Course> Courses { get; set; }
+        public IList<CourseStudent> StudentCourses { get; set; }
     }
 }
