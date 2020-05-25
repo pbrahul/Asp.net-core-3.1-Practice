@@ -17,7 +17,6 @@ namespace DLL.UnitOfWork
         Task<List<T>> GetListAsynce(Expression<Func<T, bool>> expression = null);
         IQueryable<T> QueryAll(Expression<Func<T, bool>> expression = null);
 
-
     }
 
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class

@@ -1,4 +1,5 @@
-﻿using DLL.Repository;
+﻿using DLL.MongoReport;
+using DLL.Repository;
 using DLL.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,7 +15,7 @@ namespace DLL
             services.AddTransient<IUnitOfWork, UnitOfWork.UnitOfWork>();
             //services.AddTransient<IStudentRepository, StudentRepository>();
             //services.AddTransient<IDepartmentRepository, DepartmentRepository>();
-
+            MonfoDBDependency.Alldependency(services);
         }
 
     }
