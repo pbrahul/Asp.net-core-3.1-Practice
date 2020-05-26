@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using DLL.MongoReport;
+using DLL.MongoReport.Models;
 using Utility.Exceptions;
 
 namespace BLL.Services
@@ -31,10 +33,12 @@ namespace BLL.Services
     public class StudentService : IStudentService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly MongoDBContext _context;
 
-        public StudentService(IUnitOfWork unitOfWork)
+        public StudentService(IUnitOfWork unitOfWork, MongoDBContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public async Task<Student> AddStudentAsync(StudentInsertRequest request)
@@ -48,9 +52,21 @@ namespace BLL.Services
 
             };
              await _unitOfWork.studentRepository.CreateAsync(student);
-
+            
             if (await _unitOfWork.ApplicationSaveChangesAsync())
             {
+                //Mongodb department student report Insert
+
+                DepartmentStudentReportMongo reportMongo=new DepartmentStudentReportMongo()
+                {
+                    DepartmentCode = student.Department.Code,
+                    DepartmentName = student.Department.DeptName,
+                    StudentName = student.Name,
+                    StudentEmail = student.Email,
+                    StudentRollNo = student.RollNo
+                };
+                await _context.DepartmentStudentReport.InsertOneAsync(reportMongo);
+
                 return student;
             }
             throw new MyAppException("Student Data Not save");
